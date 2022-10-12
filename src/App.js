@@ -1,8 +1,14 @@
-import { dogsData } from "./data";
+// import from my packages
 import { useState } from "react";
+import { v1 as generateUniqueID } from "uuid";
+
+// import my Components
 import DogDetails from "./DogDetails";
 
-import { v1 as generateUniqueID } from "uuid";
+// import data
+import { dogsData } from "./data";
+
+// import CSS
 
 function App() {
   const [dogs, setDogs] = useState(dogsData);
@@ -17,23 +23,49 @@ function App() {
     favFlavor: "",
     contact: "",
   });
+  const [checked, setChecked] = useState(false);
+  const [selectOption, setSelectOption] = useState("");
 
   function addDog() {
-    const rover = {
+    const dog = {
       id: generateUniqueID(),
-      name: "Rover",
+      name: newDog.name,
       present: false,
       grade: 100,
       notes: "The goodest new dog",
-      age: 5,
-      likesSwimming: true,
-      favFlavor: "beef",
-      contact: "r0v3r@yoyodyne.io",
+      age: newDog.age,
+      likesSwimming: checked,
+      favFlavor: selectOption,
+      contact: newDog.contact,
     };
-    setDogs([rover, ...dogs]);
+    setDogs([dog, ...dogs]);
   }
 
-  function handleTextChange(event) {}
+  function handleTextChange(e) {
+    setNewDog({ ...newDog, [e.target.id]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    alert(`submitted`);
+    addDog();
+    resetDogForm();
+  }
+
+  function resetDogForm() {
+    setNewDog({
+      id: "",
+      name: "",
+      present: false,
+      grade: 100,
+      age: "",
+      likesSwimming: "",
+      favFlavor: "",
+      contact: "",
+    });
+    setChecked(false);
+    setSelectOption("");
+  }
 
   function removeDog(dogID) {
     const filteredDogArray = dogs.filter((dog) => dog.id !== dogID);
@@ -61,7 +93,7 @@ function App() {
             {showNewDogForm ? "hide form" : "Add a new dog"}
           </button>
           {showNewDogForm ? (
-            <form>
+            <form onSubmit={handleSubmit}>
               <label htmlFor="name">Name:</label>
               <input
                 type="text"
@@ -87,7 +119,13 @@ function App() {
                 value={newDog.contact}
               />
               <label htmlFor="favFlavor">Favorite flavor:</label>
-              <select id="favFlavor">
+              <select
+                value={selectOption}
+                onChange={(e) => {
+                  setSelectOption(e.target.value);
+                }}
+                id="favFlavor"
+              >
                 <option value=""></option>
                 <option value="beef">Beef</option>
                 <option value="chicken">Chicken</option>
@@ -95,7 +133,11 @@ function App() {
                 <option value="bacon">Bacon</option>
               </select>
               <label>Likes swimming:</label>
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => setChecked(!checked)}
+              />
               <br />
               <input type="submit" />
             </form>
